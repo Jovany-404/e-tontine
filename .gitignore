@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+
+**/node_modules/
+**/vendor/
+**/dist/
+**/public/build/
+
+**/.phpunit.result.cache
+**/database/*.sqlite*
+**/storage/framework/cache/**
+**/storage/framework/sessions/**
+**/storage/framework/views/**
+**/storage/logs/*.log
