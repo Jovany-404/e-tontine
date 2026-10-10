@@ -124,5 +124,9 @@ class AppServiceProvider extends ServiceProvider
         // Empêche l'envoi massif de demandes d'adhésion.
         RateLimiter::for('membership-request', fn (Request $request) => Limit::perHour(10)
             ->by($request->user('sanctum')?->getAuthIdentifier() ?: $request->ip()));
+
+        // Évite les tentatives automatisées de démarrage des tontines.
+        RateLimiter::for('tontine-start', fn (Request $request) => Limit::perHour(5)
+            ->by($request->user('sanctum')?->getAuthIdentifier() ?: $request->ip()));
     }
 }

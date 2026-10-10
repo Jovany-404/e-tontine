@@ -57,6 +57,12 @@ class TontinePolicy
         return $this->asManager($user, $tontine);
     }
 
+    /** Démarrer le premier cycle de la tontine. */
+    public function startCycle(User $user, Tontine $tontine): Response
+    {
+        return $this->asManager($user, $tontine);
+    }
+
     /** Enregistrer ou corriger un paiement. */
     public function recordPayments(User $user, Tontine $tontine): Response
     {

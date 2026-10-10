@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CycleController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\InvitationController;
@@ -64,6 +65,8 @@ Route::prefix('v1')->group(function () {
             ->middleware('throttle:10,60,tontine-create');
         Route::get('/tontines/{tontine}', [TontineController::class, 'show']);
         Route::patch('/tontines/{tontine}', [TontineController::class, 'update']);
+        Route::post('/tontines/{tontine}/cycles/start', [CycleController::class, 'start'])
+            ->middleware('throttle:tontine-start');
 
         // Lien d'invitation (gérant uniquement, contrôlé par la policy).
         Route::get('/tontines/{tontine}/invitations', [InvitationController::class, 'index']);
