@@ -3,15 +3,15 @@
 namespace App\Models;
 
 use App\Enums\PaymentMethod;
+use App\Models\Concerns\HasPublicId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
-    use HasFactory;
+    use HasFactory, HasPublicId;
 
-    // recorded_by est toujours renseigné par le serveur (utilisateur connecté), jamais par la requête.
     protected $fillable = [
         'schedule_id',
         'amount',
@@ -19,7 +19,6 @@ class Payment extends Model
         'reference',
         'note',
         'paid_at',
-        'recorded_by',
     ];
 
     protected function casts(): array

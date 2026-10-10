@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\MembershipRequestController;
 use App\Http\Controllers\Api\PasswordResetController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\PublicInvitationController;
 use App\Http\Controllers\Api\TontineController;
@@ -67,6 +68,12 @@ Route::prefix('v1')->group(function () {
         Route::patch('/tontines/{tontine}', [TontineController::class, 'update']);
         Route::post('/tontines/{tontine}/cycles/start', [CycleController::class, 'start'])
             ->middleware('throttle:tontine-start');
+        Route::scopeBindings()->group(function () {
+            Route::get('/tontines/{tontine}/schedules', [PaymentController::class, 'schedules']);
+            Route::get('/tontines/{tontine}/payments', [PaymentController::class, 'index']);
+            Route::post('/tontines/{tontine}/schedules/{schedule}/payments', [PaymentController::class, 'store'])
+                ->middleware('throttle:payment-record');
+        });
 
         // Lien d'invitation (gérant uniquement, contrôlé par la policy).
         Route::get('/tontines/{tontine}/invitations', [InvitationController::class, 'index']);

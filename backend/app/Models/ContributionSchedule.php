@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ScheduleStatus;
+use App\Models\Concerns\HasPublicId;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ContributionSchedule extends Model
 {
-    use HasFactory;
+    use HasFactory, HasPublicId;
 
     // amount_paid, status et paid_at sont calculés par le serveur à partir des paiements.
     protected $fillable = [

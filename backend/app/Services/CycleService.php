@@ -10,6 +10,7 @@ use App\Models\Tontine;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class CycleService
@@ -69,6 +70,7 @@ class CycleService
 
                 foreach ($members as $member) {
                     $schedules[] = [
+                        'public_id' => (string) Str::ulid(),
                         'cycle_id' => $cycle->id,
                         'round' => $round,
                         'tontine_member_id' => $member->id,

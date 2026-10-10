@@ -128,5 +128,9 @@ class AppServiceProvider extends ServiceProvider
         // Évite les tentatives automatisées de démarrage des tontines.
         RateLimiter::for('tontine-start', fn (Request $request) => Limit::perHour(5)
             ->by($request->user('sanctum')?->getAuthIdentifier() ?: $request->ip()));
+
+        // Limite l'enregistrement manuel des paiements.
+        RateLimiter::for('payment-record', fn (Request $request) => Limit::perHour(60)
+            ->by($request->user('sanctum')?->getAuthIdentifier() ?: $request->ip()));
     }
 }

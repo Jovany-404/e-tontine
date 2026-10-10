@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Tontine extends Model
@@ -75,6 +76,11 @@ class Tontine extends Model
     public function cycles(): HasMany
     {
         return $this->hasMany(Cycle::class);
+    }
+
+    public function schedules(): HasManyThrough
+    {
+        return $this->hasManyThrough(ContributionSchedule::class, Cycle::class);
     }
 
     /** Cycle en cours (au plus un par tontine). */
