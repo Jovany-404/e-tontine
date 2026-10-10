@@ -13,6 +13,8 @@ npm run dev
 
 Les invitations sont accessibles à `/join/{token}`. Une demande nécessite un compte connecté
 et une adresse email vérifiée ; le statut est relu depuis l'API lors du chargement de la page.
+Depuis la vue d'une tontine brouillon, son gérant peut démarrer le premier cycle ; l'API
+active alors la tontine et génère les échéances.
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
