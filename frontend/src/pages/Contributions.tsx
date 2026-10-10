@@ -414,7 +414,7 @@ function StatusBadge({ schedule }: { schedule: ContributionSchedule }) {
 
   return (
     <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${style}`}>
-      {schedule.is_overdue ? 'En retard' : statusLabels[schedule.status]}
+      {statusLabels[schedule.status]}{schedule.is_overdue ? ' · en retard' : ''}
     </span>
   )
 }
