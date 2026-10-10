@@ -2,21 +2,26 @@
 
 namespace Database\Factories;
 
-use App\Models\Payment;
+use App\Enums\PaymentMethod;
+use App\Models\ContributionSchedule;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Carbon\Carbon;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Payment>
+ */
 class PaymentFactory extends Factory
 {
-    protected $model = Payment::class;
-
     public function definition(): array
     {
         return [
-            'reference' => 'PAY-' . strtoupper(substr($this->faker->unique()->string(16), 0, 12)),
-            'methode' => $this->faker->randomElement(['cash', 'transfert', 'mobile_money', 'bank']),
-            'montant' => $this->faker->numberBetween(1000, 50000),
-            'date_paiement' => Carbon::now(),
+            'schedule_id' => ContributionSchedule::factory(),
+            'amount' => 10000,
+            'method' => PaymentMethod::Cash,
+            'reference' => null,
+            'note' => null,
+            'recorded_by' => User::factory(),
+            'paid_at' => now()->toDateString(),
         ];
     }
 }

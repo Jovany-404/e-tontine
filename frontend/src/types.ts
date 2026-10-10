@@ -1,9 +1,12 @@
 // Types globaux de l'application
 
 export interface User {
-  id: number
+  id: string | number
+  name?: string
   nom?: string
   email: string
+  email_verified?: boolean
+  phone?: string | null
   telephone?: string
   role?: string
   is_active?: boolean
@@ -15,10 +18,11 @@ export interface LoginCredentials {
 }
 
 export interface RegisterData {
-  nom: string
+  name: string
   email: string
-  telephone?: string
+  phone?: string
   password: string
+  password_confirmation: string
 }
 
 export interface Tontine {

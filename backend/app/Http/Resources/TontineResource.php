@@ -2,33 +2,43 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\MemberRole;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin \App\Models\Tontine
+ */
 class TontineResource extends JsonResource
 {
-    public function toArray($request): array
+    // Rôle de l'utilisateur connecté DANS cette tontine (calculé par le serveur, jamais par le front).
+    public function __construct($resource, private ?MemberRole $myRole = null)
+    {
+        parent::__construct($resource);
+    }
+
+    public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'nom' => $this->nom,
+            'id' => $this->public_id,
+            'name' => $this->name,
             'description' => $this->description,
-            'montant_total' => $this->montant_total,
-            'montant_membre' => $this->montant_membre,
-            'nombre_membres' => $this->nombre_membres,
-            'nombre_cycles' => $this->nombre_cycles,
-            'date_debut' => $this->date_debut->format('Y-m-d'),
-            'date_fin' => $this->date_fin ? $this->date_fin->format('Y-m-d') : null,
-            'statut' => $this->statut,
-            'type_rotation' => $this->type_rotation,
-            'delai_paiement_jours' => $this->delai_paiement_jours,
-            'notification_active' => $this->notification_active,
-            'montant_total_paye' => $this->montant_total_paye,
-            'montant_total_restant' => $this->montant_total_restant,
-            'nombre_membres_paye' => $this->nombre_membres_paye,
-            'nombre_membres_retard' => $this->nombre_membres_retard,
-            'progression' => $this->progression,
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'type' => $this->type->value,
+            'contribution_amount' => $this->contribution_amount,
+            'frequency' => $this->frequency->value,
+            'start_date' => $this->start_date->toDateString(),
+            'expected_members' => $this->expected_members,
+            'rules' => $this->rules,
+            'status' => $this->status->value,
+            // Présent uniquement si le contrôleur a chargé le comptage.
+            'members_count' => $this->whenCounted('activeMembers'),
+            'my_role' => $this->myRole?->value,
+            // Minimisation : seulement le nom du gérant, jamais son email ni son téléphone.
+            'manager' => $this->whenLoaded('manager', fn () => [
+                'id' => $this->manager->public_id,
+                'name' => $this->manager->name,
+            ]),
+            'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
 }

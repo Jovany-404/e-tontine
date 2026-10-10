@@ -1,9 +1,16 @@
 // Routeur principal de l'application
 
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 import Layout from "../components/layout/Layout";
+import JoinPage from "../pages/JoinPage";
 import Login from "../pages/login.tsx";
 import Register from "../pages/Register";
 import Dashboard from "../pages/Dashboard";
@@ -22,13 +29,18 @@ import Security from "../pages/Security";
 // Route protégée
 function ProtectedRoute({ children }: { children: React.ReactElement }) {
   const { isAuthenticated } = useAuth();
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  const location = useLocation();
+
+  return isAuthenticated
+    ? children
+    : <Navigate to="/login" replace state={{ from: location }} />;
 }
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/join/:token" element={<JoinPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 

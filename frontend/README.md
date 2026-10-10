@@ -1,5 +1,19 @@
 # React + TypeScript + Vite
 
+## e-Tontine
+
+Le frontend communique avec l'API Laravel sur `http://localhost:8001/api/v1` par défaut.
+Pour utiliser une autre URL, définis `VITE_API_URL` dans un fichier `.env` à la racine du frontend.
+
+Depuis `C:\xampp\htdocs\tontine-saas-frontend`, démarre l'application avec :
+
+```powershell
+npm run dev
+```
+
+Les invitations sont accessibles à `/join/{token}`. Une demande nécessite un compte connecté
+et une adresse email vérifiée ; le statut est relu depuis l'API lors du chargement de la page.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

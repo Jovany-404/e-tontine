@@ -15,6 +15,7 @@ interface AuthContextValue {
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (payload: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   isAuthenticated: boolean;
 }
 
@@ -34,9 +35,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (credentials: LoginCredentials) => {
     try {
       await authService.login(credentials);
-      await authService.validateSession();
 
-      setUser(authService.getCurrentUser());
+      setUser(await authService.validateSession());
       setIsAuthenticated(true);
     } catch (error) {
       authService.clearAuthStorage();
@@ -49,7 +49,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (payload: RegisterData) => {
     try {
       await authService.register(payload);
-      await authService.validateSession();
 
       setUser(authService.getCurrentUser());
       setIsAuthenticated(true);
@@ -67,6 +66,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(false);
   };
 
+  const refreshUser = async () => {
+    const currentUser = await authService.validateSession();
+    setUser(currentUser);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -74,6 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
         logout,
+        refreshUser,
         isAuthenticated,
       }}
     >

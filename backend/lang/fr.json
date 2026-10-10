@@ -1,0 +1,36 @@
+{
+    "Unauthenticated.": "Non authentifié.",
+    "Too Many Attempts.": "Trop de tentatives. Veuillez réessayer dans quelques instants.",
+    "Not found.": "Ressource introuvable.",
+    "Logged out.": "Déconnexion réussie.",
+    "All sessions have been closed.": "Toutes les sessions ont été fermées.",
+    "If an account exists for this email, a reset link has been sent.": "Si un compte existe pour cette adresse email, un lien de réinitialisation vient d'être envoyé.",
+    "Your email address is already verified.": "Votre adresse email est déjà vérifiée.",
+    "Verification link sent.": "Lien de vérification envoyé.",
+    "Your email address is not verified.": "Votre adresse email n'est pas vérifiée. Confirmez-la pour continuer.",
+    "Only the manager of this tontine can do this.": "Seul le gérant de cette tontine peut effectuer cette action.",
+    "Password updated.": "Mot de passe mis à jour.",
+    "This field can no longer be changed once the tontine has started.": "Ce champ ne peut plus être modifié une fois la tontine démarrée.",
+    "The expected number of members cannot be lower than the current number of members (:count).": "Le nombre de membres prévu ne peut pas être inférieur au nombre de membres actuel (:count).",
+    "The start date cannot be in the past.": "La date de début ne peut pas être dans le passé.",
+
+    "Hello!": "Bonjour !",
+    "Whoops!": "Oups !",
+    "Regards": "Cordialement",
+    "All rights reserved.": "Tous droits réservés.",
+
+    "Verify Email Address": "Confirmez votre adresse email",
+    "Please click the button below to verify your email address.": "Cliquez sur le bouton ci-dessous pour confirmer votre adresse email.",
+    "If you did not create an account, no further action is required.": "Si vous n'avez pas créé de compte, vous n'avez rien à faire.",
+
+    "Reset Password Notification": "Réinitialisation de votre mot de passe",
+    "Reset Password": "Réinitialiser le mot de passe",
+    "You are receiving this email because we received a password reset request for your account.": "Vous recevez cet email car nous avons reçu une demande de réinitialisation du mot de passe de votre compte.",
+    "This password reset link will expire in :count minutes.": "Ce lien de réinitialisation expirera dans :count minutes.",
+    "If you did not request a password reset, no further action is required.": "Si vous n'avez pas demandé cette réinitialisation, vous n'avez rien à faire.",
+
+    "If you're having trouble clicking the \":actionText\" button, copy and paste the URL below\ninto your web browser:": "Si vous ne parvenez pas à cliquer sur le bouton \":actionText\", copiez et collez l'adresse ci-dessous\ndans votre navigateur :",
+    "If you’re having trouble clicking the \":actionText\" button, copy and paste the URL below\ninto your web browser:": "Si vous ne parvenez pas à cliquer sur le bouton \":actionText\", copiez et collez l'adresse ci-dessous\ndans votre navigateur :",
+
+    "This tontine is completed: no invitation can be created.": "Cette tontine est terminée : aucune invitation ne peut être créée."
+}

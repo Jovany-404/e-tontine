@@ -1,13 +1,15 @@
 // Page de connexion
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: Location } | null)?.from;
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,7 +27,10 @@ export default function Login() {
 
     try {
       await login(formData);
-      navigate("/");
+      navigate(
+        from ? `${from.pathname}${from.search}${from.hash}` : "/",
+        { replace: true },
+      );
     } catch (err: any) {
       const message =
         err?.response?.data?.message || err?.message || "Erreur de connexion";
@@ -124,6 +129,7 @@ export default function Login() {
         <div className="mt-6 text-center">
           <Link
             to="/register"
+            state={location.state}
             className="text-sm font-medium text-sky-600 hover:text-sky-700"
           >
             Créer un compte

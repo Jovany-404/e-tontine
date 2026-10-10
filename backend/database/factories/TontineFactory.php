@@ -2,33 +2,53 @@
 
 namespace Database\Factories;
 
+use App\Enums\Frequency;
+use App\Enums\MemberRole;
+use App\Enums\MemberStatus;
+use App\Enums\TontineStatus;
+use App\Enums\TontineType;
 use App\Models\Tontine;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Carbon\Carbon;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Tontine>
+ */
 class TontineFactory extends Factory
 {
-    protected $model = Tontine::class;
-
     public function definition(): array
     {
-        $user = User::first();
-
         return [
-            'user_id' => $user ? $user->id : 1,
-            'nom' => $this->faker->sentence(3),
-            'description' => $this->faker->paragraph(),
-            'montant_total' => $this->faker->numberBetween(50000, 500000),
-            'montant_membre' => $this->faker->numberBetween(5000, 50000),
-            'nombre_membres' => 0,
-            'nombre_cycles' => $this->faker->numberBetween(5, 12),
-            'date_debut' => Carbon::now(),
-            'date_fin' => Carbon::now()->addMonths(12),
-            'statut' => 'active',
-            'type_rotation' => 'chrono',
-            'delai_paiement_jours' => 5,
-            'notification_active' => true,
+            'manager_id' => User::factory(),
+            'name' => 'Tontine '.fake()->lastName(),
+            'description' => fake()->sentence(),
+            'type' => TontineType::Family,
+            'contribution_amount' => fake()->randomElement([5000, 10000, 20000, 50000]),
+            'frequency' => Frequency::Monthly,
+            'start_date' => now()->addWeek()->toDateString(),
+            'expected_members' => fake()->numberBetween(5, 12),
+            'rules' => null,
+            'status' => TontineStatus::Draft,
         ];
+    }
+
+    /** Règle métier : le gérant est aussi membre de sa tontine. */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Tontine $tontine) {
+            $tontine->members()->create([
+                'user_id' => $tontine->manager_id,
+                'role' => MemberRole::Manager,
+                'status' => MemberStatus::Active,
+                'joined_at' => now(),
+            ]);
+        });
+    }
+
+    public function active(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => TontineStatus::Active,
+        ]);
     }
 }

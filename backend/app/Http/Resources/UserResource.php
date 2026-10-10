@@ -2,20 +2,30 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin \App\Models\User
+ */
 class UserResource extends JsonResource
 {
-    public function toArray($request): array
+    /**
+     * Seuls les champs utiles au front sont exposés.
+     * L'ID interne n'apparaît jamais : on expose le public_id.
+     */
+    public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'id' => $this->public_id,
+            'name' => $this->name,
             'email' => $this->email,
-            'nom' => $this->nom,
-            'telephone' => $this->telephone,
-            'role' => $this->role,
-            'is_active' => $this->is_active,
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'phone' => $this->phone,
+            'city' => $this->city,
+            'email_verified' => $this->email_verified_at !== null,
+            'phone_verified' => $this->phone_verified_at !== null,
+            'identity_status' => $this->identity_status->value,
+            'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
 }
