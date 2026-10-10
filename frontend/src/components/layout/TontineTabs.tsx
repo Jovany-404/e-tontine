@@ -3,10 +3,10 @@
 import { Link, useLocation, useParams } from 'react-router-dom'
 
 export default function TontineTabs() {
-  const { id } = useParams()
+  const { id, tontineId } = useParams()
   const location = useLocation()
 
-  const base = `/tontines/${id}`
+  const base = `/tontines/${id ?? tontineId ?? ''}`
   const current = location.pathname
 
   const tabs = [

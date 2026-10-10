@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Trophy } from "lucide-react";
+import TontineTabs from "../components/layout/TontineTabs";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 
@@ -89,6 +90,8 @@ export default function Draws() {
 
   return (
     <div className="space-y-6">
+      <TontineTabs />
+
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Tirages</h1>

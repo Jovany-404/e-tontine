@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import axios from 'axios'
 import { CalendarDays, CircleDollarSign, Loader2, Play, Users } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
+import TontineTabs from '../components/layout/TontineTabs'
 import { cycleService } from '../services/cycles'
 import { tontineService, type TontineSummary } from '../services/tontines'
 
@@ -137,6 +138,8 @@ export default function TontineOverview() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
+      <TontineTabs />
+
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-sm font-medium text-slate-500">
