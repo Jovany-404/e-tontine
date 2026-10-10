@@ -2,22 +2,21 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasPublicId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Draw extends Model
 {
-    use HasFactory;
+    use HasFactory, HasPublicId;
 
-    // Un tirage n'est jamais créé à partir d'une requête : uniquement par DrawService (Phase 13).
     protected $fillable = [
         'cycle_id',
         'tontine_id',
         'round',
         'winner_member_id',
         'amount',
-        'drawn_by',
         'drawn_at',
     ];
 

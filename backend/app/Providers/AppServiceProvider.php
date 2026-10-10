@@ -132,5 +132,8 @@ class AppServiceProvider extends ServiceProvider
         // Limite l'enregistrement manuel des paiements.
         RateLimiter::for('payment-record', fn (Request $request) => Limit::perHour(60)
             ->by($request->user('sanctum')?->getAuthIdentifier() ?: $request->ip()));
+
+        RateLimiter::for('tontine-draw', fn (Request $request) => Limit::perHour(10)
+            ->by($request->user('sanctum')?->getAuthIdentifier() ?: $request->ip()));
     }
 }

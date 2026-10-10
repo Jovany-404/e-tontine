@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CycleController;
+use App\Http\Controllers\Api\DrawController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\InvitationController;
@@ -69,6 +70,9 @@ Route::prefix('v1')->group(function () {
         Route::post('/tontines/{tontine}/cycles/start', [CycleController::class, 'start'])
             ->middleware('throttle:tontine-start');
         Route::scopeBindings()->group(function () {
+            Route::get('/tontines/{tontine}/draws', [DrawController::class, 'index']);
+            Route::post('/tontines/{tontine}/draws', [DrawController::class, 'store'])
+                ->middleware('throttle:tontine-draw');
             Route::get('/tontines/{tontine}/schedules', [PaymentController::class, 'schedules']);
             Route::get('/tontines/{tontine}/payments', [PaymentController::class, 'index']);
             Route::post('/tontines/{tontine}/schedules/{schedule}/payments', [PaymentController::class, 'store'])
