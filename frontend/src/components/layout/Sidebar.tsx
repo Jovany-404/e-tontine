@@ -5,14 +5,15 @@ import { Home, Users, UserCircle2, Shield, LayoutList } from 'lucide-react'
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   [
-    'flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium',
-    isActive ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-100',
+    'flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium',
+    isActive ? 'bg-emerald-50 text-emerald-900 shadow-sm ring-1 ring-emerald-900/5' : 'text-slate-600 hover:bg-amber-50 hover:text-emerald-900',
   ].join(' ')
 
 export default function Sidebar() {
   return (
-    <aside className="fixed left-0 top-[73px] h-[calc(100vh-73px)] w-64 border-r border-slate-200 bg-white p-4">
-      <nav className="space-y-2">
+    <aside className="sticky top-[68px] z-20 w-full shrink-0 border-b border-emerald-950/10 bg-white/90 p-2 backdrop-blur md:top-[73px] md:h-[calc(100vh-73px)] md:w-64 md:border-b-0 md:border-r md:p-4">
+      <div className="mb-2 hidden px-3 pt-3 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 md:block">Votre espace</div>
+      <nav className="flex gap-1 overflow-x-auto md:block md:space-y-2">
         <NavLink to="/" end className={linkClass}>
           <Home size={18} />
           Dashboard

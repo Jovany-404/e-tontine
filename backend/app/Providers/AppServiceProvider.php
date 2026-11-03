@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\ContributionSchedule;
 use App\Models\Cycle;
 use App\Models\Draw;
+use App\Models\IdentityVerification;
 use App\Models\Invitation;
 use App\Models\MembershipRequest;
 use App\Models\Payment;
@@ -48,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
             'contribution_schedule' => ContributionSchedule::class,
             'payment' => Payment::class,
             'draw' => Draw::class,
+            'identity_verification' => IdentityVerification::class,
         ]);
 
         // Règle de mot de passe par défaut, utilisée via Password::defaults() dans les validations.
@@ -134,6 +136,9 @@ class AppServiceProvider extends ServiceProvider
             ->by($request->user('sanctum')?->getAuthIdentifier() ?: $request->ip()));
 
         RateLimiter::for('tontine-draw', fn (Request $request) => Limit::perHour(10)
+            ->by($request->user('sanctum')?->getAuthIdentifier() ?: $request->ip()));
+
+        RateLimiter::for('identity-submit', fn (Request $request) => Limit::perHour(5)
             ->by($request->user('sanctum')?->getAuthIdentifier() ?: $request->ip()));
     }
 }

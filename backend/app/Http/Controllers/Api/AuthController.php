@@ -7,9 +7,11 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\IdentityVerificationService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -20,16 +22,30 @@ class AuthController extends Controller
      * Inscription : crée le compte, déclenche l'email de vérification et renvoie un token.
      * Seuls les champs validés sont utilisés : un client ne peut pas forcer email_verified_at, etc.
      */
-    public function register(RegisterRequest $request): JsonResponse
-    {
+    public function register(
+        RegisterRequest $request,
+        IdentityVerificationService $identity,
+    ): JsonResponse {
         $data = $request->validated();
 
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'phone' => $data['phone'] ?? null,
-            'password' => $data['password'], // hashé automatiquement par le cast "hashed"
-        ])->refresh();
+        $user = DB::transaction(function () use ($data, $request, $identity): User {
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'phone' => $data['phone'] ?? null,
+                'password' => $data['password'], // hashé automatiquement par le cast "hashed"
+            ])->refresh();
+
+            $identity->submit(
+                $user,
+                $data['document_type'],
+                $request->file('document_front'),
+                $request->file('document_back'),
+                $request->file('profile_photo'),
+            );
+
+            return $user->refresh();
+        });
 
         // L'événement Registered envoie l'email de vérification.
         event(new Registered($user));

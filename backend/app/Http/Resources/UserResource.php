@@ -25,6 +25,9 @@ class UserResource extends JsonResource
             'email_verified' => $this->email_verified_at !== null,
             'phone_verified' => $this->phone_verified_at !== null,
             'identity_status' => $this->identity_status->value,
+            'profile_photo_available' => $this->identityVerification()
+                ->whereNotNull('profile_photo_path')
+                ->exists(),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

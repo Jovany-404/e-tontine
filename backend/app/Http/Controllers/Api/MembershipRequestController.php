@@ -35,7 +35,10 @@ class MembershipRequestController extends Controller
 
         $requests = $tontine->membershipRequests()
             ->pending()
-            ->with('user:id,public_id,name')
+            ->with([
+                'user:id,public_id,name,identity_status',
+                'user.identityVerification:id,user_id,document_type,status',
+            ])
             ->oldest()
             ->paginate(20);
 

@@ -4,6 +4,7 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class RegisterRequest extends FormRequest
@@ -30,6 +31,18 @@ class RegisterRequest extends FormRequest
             'phone' => ['nullable', 'string', 'regex:/^\+?[0-9 .\-]{8,20}$/'],
             'password' => ['required', 'string', 'confirmed', Password::defaults()],
             'device_name' => ['nullable', 'string', 'max:100'],
+            'document_type' => ['required', Rule::in(['national_id', 'passport'])],
+            'document_front' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
+            'document_back' => [
+                Rule::requiredIf($this->input('document_type') === 'national_id'),
+                Rule::prohibitedIf($this->input('document_type') === 'passport'),
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:8192',
+            ],
+            'profile_photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'identity_consent' => ['accepted'],
         ];
     }
 }

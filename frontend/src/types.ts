@@ -7,6 +7,8 @@ export interface User {
   email: string
   email_verified?: boolean
   phone?: string | null
+  profile_photo_available?: boolean
+  identity_status?: 'unverified' | 'pending' | 'verified' | 'rejected'
   telephone?: string
   role?: string
   is_active?: boolean
@@ -23,6 +25,11 @@ export interface RegisterData {
   phone?: string
   password: string
   password_confirmation: string
+  document_type: 'national_id' | 'passport'
+  document_front: File
+  document_back?: File
+  profile_photo: File
+  identity_consent: boolean
 }
 
 export interface Tontine {

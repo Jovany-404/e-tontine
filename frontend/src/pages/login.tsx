@@ -52,11 +52,14 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-sky-500 to-sky-700 p-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#f5f7f1] p-4">
+      <div className="pointer-events-none absolute -left-20 top-0 h-72 w-72 rounded-full bg-emerald-300/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -right-20 h-96 w-96 rounded-full bg-amber-300/20 blur-3xl" />
+      <div className="brand-depth relative w-full max-w-md rounded-[2rem] border border-white/80 bg-white p-8 shadow-[0_30px_80px_-35px_rgba(15,50,34,0.35)] sm:p-10">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-sky-700">MY TONTINE</h1>
-          <p className="mt-2 text-slate-600">Connectez-vous à votre espace</p>
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-emerald-800 text-2xl font-black text-amber-300 shadow-lg shadow-emerald-900/20">E</div>
+          <h1 className="mt-4 text-2xl font-black tracking-[0.12em] text-emerald-950">E-TONTINE</h1>
+          <p className="mt-2 text-slate-600">Connectez-vous à votre espace sécurisé</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -75,7 +78,7 @@ export default function Login() {
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
-                className="w-full rounded-xl border border-slate-300 py-3 pl-10 pr-4 outline-none focus:border-sky-500"
+                className="form-input"
                 placeholder="votre@email.com"
                 required
               />
@@ -97,14 +100,15 @@ export default function Login() {
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
-                className="w-full rounded-xl border border-slate-300 py-3 pl-10 pr-12 outline-none focus:border-sky-500"
+                className="form-input pr-12"
                 placeholder="••••••••"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
+                aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-800"
               >
                 {showPassword ? (
                   <EyeOff size={18} className="text-slate-400" />
@@ -120,7 +124,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-sky-600 py-3 font-medium text-white hover:bg-sky-700 disabled:opacity-60"
+            className="w-full rounded-xl bg-emerald-800 py-3.5 font-semibold text-white shadow-lg shadow-emerald-900/15 transition hover:-translate-y-0.5 hover:bg-emerald-900 disabled:opacity-60"
           >
             {loading ? "Connexion..." : "Connexion"}
           </button>
@@ -130,7 +134,7 @@ export default function Login() {
           <Link
             to="/register"
             state={location.state}
-            className="text-sm font-medium text-sky-600 hover:text-sky-700"
+            className="text-sm font-semibold text-emerald-800 hover:text-emerald-950"
           >
             Créer un compte
           </Link>

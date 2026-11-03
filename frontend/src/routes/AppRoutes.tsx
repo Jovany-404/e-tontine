@@ -25,6 +25,7 @@ import Contributions from "../pages/Contributions";
 import Draws from "../pages/Draws";
 import Profile from "../pages/Profile";
 import Security from "../pages/Security";
+import MembershipRequests from "../pages/MembershipRequests";
 
 // Route protégée
 function ProtectedRoute({ children }: { children: React.ReactElement }) {
@@ -63,6 +64,7 @@ export default function AppRoutes() {
             element={<Contributions />}
           />
           <Route path="tontines/:tontineId/draws" element={<Draws />} />
+          <Route path="tontines/:tontineId/membership-requests" element={<MembershipRequests />} />
           <Route path="members" element={<Members />} />
           <Route path="members/create" element={<MemberCreate />} />
           <Route path="profile" element={<Profile />} />

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\IdentityStatus;
 use App\Enums\MemberRole;
 use App\Enums\MemberStatus;
 use App\Enums\RequestStatus;
@@ -110,6 +111,12 @@ class MembershipRequestService
                 ->firstOrFail();
 
             $this->ensurePending($membershipRequest);
+
+            if ($membershipRequest->user()->firstOrFail()->identity_status !== IdentityStatus::Verified) {
+                throw ValidationException::withMessages([
+                    'identity' => [__('The applicant identity must be verified before approval.')],
+                ]);
+            }
 
             $memberCount = $tontine->activeMembers()->count();
             if ($memberCount >= $tontine->expected_members) {

@@ -18,8 +18,22 @@ export interface MembershipRequestStatus {
   created_at: string;
 }
 
+export interface ManagerMembershipRequest extends MembershipRequestStatus {
+  user: {
+    id: string;
+    name: string;
+    identity_status: "unverified" | "pending" | "verified" | "rejected";
+    identity_document_type: "national_id" | "passport" | null;
+  };
+}
+
 interface ApiResponse<T> {
   data: T;
+  meta?: {
+    current_page: number;
+    last_page: number;
+    total: number;
+  };
 }
 
 export const membershipRequestService = {
@@ -46,6 +60,58 @@ export const membershipRequestService = {
     );
 
     return response.data.data;
+  },
+
+  async getPendingRequests(
+    tontinePublicId: string,
+    page = 1,
+  ): Promise<{ items: ManagerMembershipRequest[]; page: number; pageCount: number; total: number }> {
+    const response = await api.get<ApiResponse<ManagerMembershipRequest[]> & { meta: NonNullable<ApiResponse<ManagerMembershipRequest[]>["meta"]> }>(
+      `/tontines/${tontinePublicId}/membership-requests`,
+      { params: { page } },
+    );
+    return {
+      items: response.data.data,
+      page: response.data.meta.current_page,
+      pageCount: response.data.meta.last_page,
+      total: response.data.meta.total,
+    };
+  },
+
+  async getIdentityFile(
+    tontinePublicId: string,
+    requestId: string,
+    kind: "front" | "back" | "profile",
+  ): Promise<Blob> {
+    const response = await api.get<Blob>(
+      `/tontines/${tontinePublicId}/membership-requests/${requestId}/identity/files/${kind}`,
+      { responseType: "blob" },
+    );
+    return response.data;
+  },
+
+  async reviewIdentity(
+    tontinePublicId: string,
+    requestId: string,
+    decision: "approve" | "reject",
+    reason?: string,
+  ): Promise<void> {
+    await api.post(
+      `/tontines/${tontinePublicId}/membership-requests/${requestId}/identity/${decision}`,
+      decision === "reject" ? { reason } : {},
+    );
+  },
+
+  async approveMembership(tontinePublicId: string, requestId: string): Promise<void> {
+    await api.post(
+      `/tontines/${tontinePublicId}/membership-requests/${requestId}/approve`,
+    );
+  },
+
+  async rejectMembership(tontinePublicId: string, requestId: string): Promise<void> {
+    await api.post(
+      `/tontines/${tontinePublicId}/membership-requests/${requestId}/reject`,
+    );
   },
 
   async resendVerification(): Promise<string> {

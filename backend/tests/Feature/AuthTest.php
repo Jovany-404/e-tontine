@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
@@ -17,8 +18,11 @@ class AuthTest extends TestCase
     use RefreshDatabase;
 
     private const REGISTER = '/api/v1/auth/register';
+
     private const LOGIN = '/api/v1/auth/login';
+
     private const FORGOT = '/api/v1/auth/forgot-password';
+
     private const RESET = '/api/v1/auth/reset-password';
 
     private function payload(array $overrides = []): array
@@ -29,7 +33,28 @@ class AuthTest extends TestCase
             'phone' => '+221 77 123 45 67',
             'password' => 'Password123',
             'password_confirmation' => 'Password123',
+            'document_type' => 'national_id',
+            'document_front' => $this->validImage('identity-front.png'),
+            'document_back' => $this->validImage('identity-back.png'),
+            'profile_photo' => $this->validImage('profile.png'),
+            'identity_consent' => '1',
         ], $overrides);
+    }
+
+    private function register(array $payload)
+    {
+        return $this->withHeaders(['Accept' => 'application/json'])
+            ->post(self::REGISTER, $payload);
+    }
+
+    private function validImage(string $name): UploadedFile
+    {
+        $png = base64_decode(
+            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a1d8AAAAASUVORK5CYII=',
+            true,
+        );
+
+        return UploadedFile::fake()->createWithContent($name, $png);
     }
 
     private function verificationUrl(User $user, ?string $hash = null, $expiresAt = null): string
@@ -52,11 +77,12 @@ class AuthTest extends TestCase
     {
         Notification::fake();
 
-        $response = $this->postJson(self::REGISTER, $this->payload());
+        $response = $this->register($this->payload());
 
         $response->assertCreated()
             ->assertJsonStructure(['user' => ['id', 'name', 'email', 'email_verified'], 'token', 'token_type'])
             ->assertJsonPath('user.email_verified', false)
+            ->assertJsonPath('user.identity_status', 'pending')
             ->assertJsonMissingPath('user.password');
 
         [$tokenId, $plainToken] = explode('|', $response->json('token'), 2);
@@ -72,7 +98,7 @@ class AuthTest extends TestCase
     {
         User::factory()->create(['email' => 'awa@example.com']);
 
-        $this->postJson(self::REGISTER, $this->payload(['email' => 'AWA@Example.com']))
+        $this->register($this->payload(['email' => 'AWA@Example.com']))
             ->assertUnprocessable()
             ->assertJsonValidationErrors('email');
     }
@@ -80,12 +106,12 @@ class AuthTest extends TestCase
     public function test_register_rejects_weak_passwords(): void
     {
         foreach (['short1A', 'alllowercase123', 'NoNumbersHere'] as $weak) {
-            $this->postJson(self::REGISTER, $this->payload(['password' => $weak, 'password_confirmation' => $weak]))
+            $this->register($this->payload(['password' => $weak, 'password_confirmation' => $weak]))
                 ->assertUnprocessable()
                 ->assertJsonValidationErrors('password');
         }
 
-        $this->postJson(self::REGISTER, $this->payload(['password_confirmation' => 'Different123']))
+        $this->register($this->payload(['password_confirmation' => 'Different123']))
             ->assertUnprocessable()
             ->assertJsonValidationErrors('password');
     }
@@ -94,7 +120,7 @@ class AuthTest extends TestCase
     {
         Notification::fake();
 
-        $this->postJson(self::REGISTER, $this->payload([
+        $this->register($this->payload([
             'email_verified_at' => now()->toDateTimeString(),
             'identity_status' => 'verified',
         ]))->assertCreated();
@@ -102,7 +128,7 @@ class AuthTest extends TestCase
         $user = User::where('email', 'awa@example.com')->first();
 
         $this->assertNull($user->email_verified_at);
-        $this->assertSame(IdentityStatus::Unverified, $user->identity_status);
+        $this->assertSame(IdentityStatus::Pending, $user->identity_status);
     }
 
     // ---------- Connexion ----------

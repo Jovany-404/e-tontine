@@ -42,7 +42,23 @@ export const authService = {
 
   // Inscription utilisateur
   register: async (payload: RegisterData) => {
-    const res = await api.post("/auth/register", payload);
+    const formData = new FormData();
+    formData.append("name", payload.name);
+    formData.append("email", payload.email);
+    formData.append("phone", payload.phone ?? "");
+    formData.append("password", payload.password);
+    formData.append("password_confirmation", payload.password_confirmation);
+    formData.append("document_type", payload.document_type);
+    formData.append("document_front", payload.document_front);
+    if (payload.document_back) {
+      formData.append("document_back", payload.document_back);
+    }
+    formData.append("profile_photo", payload.profile_photo);
+    formData.append("identity_consent", payload.identity_consent ? "1" : "0");
+
+    const res = await api.post("/auth/register", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     const { token, user } = extractAuthPayload(res.data);
 
     if (token) localStorage.setItem("auth_token", token);

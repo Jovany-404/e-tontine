@@ -20,6 +20,10 @@ class MembershipRequestResource extends JsonResource
             'user' => $this->whenLoaded('user', fn () => [
                 'id' => $this->user->public_id,
                 'name' => $this->user->name,
+                'identity_status' => $this->user->identity_status->value,
+                'identity_document_type' => $this->user->relationLoaded('identityVerification')
+                    ? $this->user->identityVerification?->document_type
+                    : null,
             ]),
         ];
     }

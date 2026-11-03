@@ -229,7 +229,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-950">Votre espace E-TONTINE</h1>
         <p className="mt-1 text-slate-500">
           {isAdmin
             ? "Vue d’administration de toutes les tontines"
@@ -286,7 +286,7 @@ export default function Dashboard() {
       )}
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-white bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-slate-900">
             {isAdmin ? "Vue générale des tontines" : "Mes tontines"}
           </h2>
@@ -334,7 +334,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-white bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-slate-900">
             {isAdmin ? "Suivi opérationnel" : "Historique de cotisations"}
           </h2>
@@ -404,7 +404,7 @@ function StatCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm">
+    <div className="rounded-2xl border border-white bg-white p-6 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-slate-500">{title}</p>

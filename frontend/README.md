@@ -1,89 +1,42 @@
-# React + TypeScript + Vite
+# e-Tontine — frontend
 
-## e-Tontine
+Application React 18, TypeScript et Vite. Elle communique avec l'API Laravel
+sur `http://localhost:8001/api/v1` par défaut. Pour utiliser une autre URL,
+définis `VITE_API_URL` dans un fichier `.env` à la racine du frontend.
 
-Le frontend communique avec l'API Laravel sur `http://localhost:8001/api/v1` par défaut.
-Pour utiliser une autre URL, définis `VITE_API_URL` dans un fichier `.env` à la racine du frontend.
+## Démarrage local
 
-Depuis `C:\xampp\htdocs\tontine-saas-frontend`, démarre l'application avec :
+Dans un premier terminal, démarre l'API depuis `backend` :
 
 ```powershell
+php artisan serve --port=8001
+```
+
+Dans un second terminal, depuis `frontend` :
+
+```powershell
+npm install
 npm run dev
 ```
 
-Les invitations sont accessibles à `/join/{token}`. Une demande nécessite un compte connecté
-et une adresse email vérifiée ; le statut est relu depuis l'API lors du chargement de la page.
-Depuis la vue d'une tontine brouillon, son gérant peut démarrer le premier cycle ; l'API
-active alors la tontine et génère les échéances.
+## Parcours d'adhésion
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- Les invitations sont accessibles à `/join/{token}`.
+- Une demande d'adhésion nécessite un compte connecté et une adresse email
+  vérifiée. Le statut de la demande est relu depuis l'API.
+- L'inscription requiert une pièce d'identité et une photo de profil. Les
+  documents sont transmis de manière privée et peuvent être consultés par le
+  gérant de la tontine concernée lorsqu'il examine une demande en attente.
+- Dans son profil, l'utilisateur voit son statut d'identité et peut transmettre
+  une nouvelle pièce si la précédente a été refusée.
+- Le gérant vérifie l'identité avant de décider séparément d'approuver ou de
+  rejeter la demande d'adhésion.
+- Depuis une tontine brouillon, son gérant peut démarrer le premier cycle ;
+  l'API active alors la tontine et génère les échéances.
 
-Currently, two official plugins are available:
+## Vérification
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```powershell
+npm run build
+npm run lint
 ```

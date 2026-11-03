@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CycleController;
 use App\Http\Controllers\Api\DrawController;
 use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\HealthController;
+use App\Http\Controllers\Api\IdentityVerificationController;
 use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\MembershipRequestController;
 use App\Http\Controllers\Api\PasswordResetController;
@@ -47,6 +48,10 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', [UserController::class, 'show']);
         Route::patch('/user', [ProfileController::class, 'update']);
+        Route::get('/identity', [IdentityVerificationController::class, 'show']);
+        Route::post('/identity/submissions', [IdentityVerificationController::class, 'store'])
+            ->middleware('throttle:identity-submit');
+        Route::get('/identity/profile-photo', [IdentityVerificationController::class, 'profilePhoto']);
 
         // 5 tentatives par heure : empêche de deviner le mot de passe actuel avec un token volé.
         Route::put('/user/password', [ProfileController::class, 'updatePassword'])
@@ -92,6 +97,10 @@ Route::prefix('v1')->group(function () {
         Route::scopeBindings()->group(function () {
             Route::get('/tontines/{tontine}/membership-requests/mine', [MembershipRequestController::class, 'mine']);
             Route::get('/tontines/{tontine}/membership-requests', [MembershipRequestController::class, 'index']);
+            Route::get('/tontines/{tontine}/membership-requests/{membershipRequest}/identity/files/{kind}', [IdentityVerificationController::class, 'file'])
+                ->whereIn('kind', ['front', 'back', 'profile']);
+            Route::post('/tontines/{tontine}/membership-requests/{membershipRequest}/identity/approve', [IdentityVerificationController::class, 'approve']);
+            Route::post('/tontines/{tontine}/membership-requests/{membershipRequest}/identity/reject', [IdentityVerificationController::class, 'reject']);
             Route::post('/tontines/{tontine}/membership-requests/{membershipRequest}/approve', [MembershipRequestController::class, 'approve']);
             Route::post('/tontines/{tontine}/membership-requests/{membershipRequest}/reject', [MembershipRequestController::class, 'reject']);
         });

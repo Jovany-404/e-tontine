@@ -13,6 +13,7 @@ class ProfileTest extends TestCase
     use RefreshDatabase;
 
     private const PROFILE = '/api/v1/user';
+
     private const PASSWORD = '/api/v1/user/password';
 
     private function tokenFor(User $user): string
@@ -67,7 +68,7 @@ class ProfileTest extends TestCase
 
     public function test_privileged_fields_are_ignored(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['identity_status' => IdentityStatus::Unverified]);
 
         $this->withToken($this->tokenFor($user))
             ->patchJson(self::PROFILE, [

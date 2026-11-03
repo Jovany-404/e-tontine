@@ -13,6 +13,7 @@ export default function TontineTabs() {
     { label: 'Aperçu', to: base },
     { label: 'Cotisations', to: `${base}/contributions` },
     { label: 'Tirages', to: `${base}/draws` },
+    { label: 'Demandes', to: `${base}/membership-requests` },
   ]
 
   return (
@@ -27,7 +28,7 @@ export default function TontineTabs() {
               className={[
                 'whitespace-nowrap rounded-t-xl px-4 py-3 text-sm font-medium',
                 active
-                  ? 'border-b-2 border-sky-600 text-sky-700'
+                  ? 'border-b-2 border-emerald-700 text-emerald-800'
                   : 'text-slate-500 hover:text-slate-900',
               ].join(' ')}
             >

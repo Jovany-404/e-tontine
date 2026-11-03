@@ -22,7 +22,7 @@ class SecurityHeaders
         // N'envoie pas l'URL d'origine aux autres sites.
         $response->headers->set('Referrer-Policy', 'no-referrer');
         // Les réponses contiennent des données personnelles : pas de mise en cache.
-        $response->headers->set('Cache-Control', 'no-store');
+        $response->headers->set('Cache-Control', 'private, no-store');
 
         return $response;
     }

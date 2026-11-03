@@ -9,13 +9,13 @@ export default function Layout() {
   const { user, logout } = useAuth()
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[#f5f7f1]">
       <Navbar user={user} onLogout={logout} />
 
-      <div className="flex">
+      <div className="flex flex-col md:flex-row">
         <Sidebar />
 
-        <main className="ml-64 flex-1 p-6">
+        <main className="min-w-0 flex-1 p-5 sm:p-7 lg:p-9">
           <Outlet />
         </main>
       </div>

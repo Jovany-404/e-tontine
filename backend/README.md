@@ -1,66 +1,55 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# e-Tontine — API backend
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+L'API est construite avec Laravel 11 et PHP 8.2. Les routes versionnées sont
+préfixées par `/api/v1`.
 
-## About Laravel
+## Pré-requis
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.2 ou supérieur avec les extensions requises par Laravel
+- Composer
+- MySQL ou MariaDB
+- Node.js et npm pour le frontend
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Démarrage local
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Depuis `backend`, installe les dépendances et prépare la configuration :
 
-## Learning Laravel
+```powershell
+composer install
+Copy-Item .env.example .env
+php artisan key:generate
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Configure ensuite la connexion MySQL dans `.env` et crée la base correspondante.
+Par défaut, le frontend utilise `http://localhost:8001/api/v1` ; démarre l'API
+sur le port `8001` :
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```powershell
+php artisan migrate
+php artisan serve --port=8001
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+En développement, les emails sont écrits dans `storage/logs/laravel.log`.
+L'URL du frontend est configurable via `FRONTEND_URL`.
 
-## Laravel Sponsors
+## Identité et demandes d'adhésion
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+À l'inscription, le candidat transmet une carte nationale (recto-verso) ou un
+passeport, ainsi qu'une photo de profil et son consentement. Les fichiers sont
+chiffrés et ne sont pas exposés dans les ressources JSON. Un candidat peut
+consulter sa photo ; le gérant concerné peut consulter les pièces uniquement
+pour une demande d'adhésion en attente.
 
-### Premium Partners
+La vérification de l'identité et la décision d'adhésion sont deux étapes
+distinctes. Une identité vérifiée est requise avant d'approuver une demande.
+Après un refus de pièce, le candidat peut en soumettre une nouvelle.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Tests
 
-## Contributing
+Les tests backend sont dans `tests/Feature`. La configuration de test utilise
+la base MySQL `etontine_test` ; configure une base de test dédiée avant de
+lancer :
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```powershell
+vendor\bin\phpunit tests\Feature
+```
