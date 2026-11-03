@@ -53,3 +53,21 @@ lancer :
 ```powershell
 vendor\bin\phpunit tests\Feature
 ```
+
+## Données de démonstration fictives
+
+Pour ajouter une tontine locale de démonstration avec cinq faux participants,
+un cycle clôturé avec paiements et tirages fictifs, et un deuxième cycle en
+cours, définis d'abord `DEMO_TONTINE_PASSWORD` dans l'environnement. Le mot de
+passe doit contenir au moins 12 caractères. Puis lance :
+
+```powershell
+$env:DEMO_TONTINE_PASSWORD = Read-Host "Mot de passe des comptes de démonstration"
+php artisan db:seed --class=DemoTontineSeeder
+```
+
+Le seeder est réexécutable sans dupliquer la tontine, les participants,
+échéances, paiements ou tirages. Les comptes utilisent les adresses
+`@etontine.test` ; le premier, `awa.demo@etontine.test`, gère la tontine.
+Toutes les données de démonstration sont fictives et ne représentent pas des
+transactions réelles.
