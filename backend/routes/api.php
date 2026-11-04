@@ -80,6 +80,7 @@ Route::prefix('v1')->group(function () {
                 ->middleware('throttle:tontine-draw');
             Route::get('/tontines/{tontine}/schedules', [PaymentController::class, 'schedules']);
             Route::get('/tontines/{tontine}/payments', [PaymentController::class, 'index']);
+            Route::patch('/tontines/{tontine}/schedules/{schedule}', [PaymentController::class, 'updateSchedule']);
             Route::post('/tontines/{tontine}/schedules/{schedule}/payments', [PaymentController::class, 'store'])
                 ->middleware('throttle:payment-record');
         });

@@ -34,6 +34,13 @@ npm run dev
 - Depuis une tontine brouillon, son gérant peut démarrer le premier cycle ;
   l'API active alors la tontine et génère les échéances.
 
+## Cotisations
+
+- Le gérant peut modifier le montant attendu pour chaque membre et chaque tour.
+  Le nouveau montant ne peut pas être inférieur aux sommes déjà encaissées.
+- Le gérant enregistre séparément chaque paiement reçu, y compris les paiements
+  partiels, avec son mode de paiement.
+
 ## Vérification
 
 ```powershell

@@ -74,4 +74,50 @@ class PaymentService
             ]);
         });
     }
+
+    public function updateExpectedAmount(
+        Tontine $tontine,
+        ContributionSchedule $schedule,
+        User $manager,
+        int $amountExpected,
+    ): ContributionSchedule {
+        return DB::transaction(function () use ($tontine, $schedule, $manager, $amountExpected): ContributionSchedule {
+            $lockedSchedule = ContributionSchedule::query()
+                ->whereKey($schedule->getKey())
+                ->whereHas('cycle', fn ($query) => $query->where('tontine_id', $tontine->id))
+                ->lockForUpdate()
+                ->firstOrFail();
+            $amountAlreadyPaid = (int) $lockedSchedule->payments()->sum('amount');
+
+            if ($amountExpected < $amountAlreadyPaid) {
+                throw ValidationException::withMessages([
+                    'amount_expected' => [__('The expected amount cannot be less than the amount already paid.')],
+                ]);
+            }
+
+            $previousAmount = $lockedSchedule->amount_expected;
+            $lockedSchedule->amount_expected = $amountExpected;
+            $lockedSchedule->amount_paid = $amountAlreadyPaid;
+            $lockedSchedule->status = match (true) {
+                $amountAlreadyPaid === 0 => ScheduleStatus::Pending,
+                $amountAlreadyPaid === $amountExpected => ScheduleStatus::Paid,
+                default => ScheduleStatus::Partial,
+            };
+            $lockedSchedule->paid_at = $lockedSchedule->status === ScheduleStatus::Paid
+                ? $lockedSchedule->payments()->max('paid_at')
+                : null;
+            $lockedSchedule->save();
+
+            $this->activityLogger->log('schedule.amount_updated', $manager, $tontine, $lockedSchedule, [
+                'previous_amount_expected' => $previousAmount,
+                'amount_expected' => $amountExpected,
+            ]);
+
+            return $lockedSchedule->load([
+                'cycle:id,tontine_id,number',
+                'member.user:id,public_id,name',
+                'payments',
+            ]);
+        });
+    }
 }

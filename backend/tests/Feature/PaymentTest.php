@@ -52,6 +52,92 @@ class PaymentTest extends TestCase
         return '/api/v1/tontines/'.$tontine->public_id.'/schedules/'.$schedule->public_id.'/payments';
     }
 
+    private function scheduleUrl(Tontine $tontine, ContributionSchedule $schedule): string
+    {
+        return '/api/v1/tontines/'.$tontine->public_id.'/schedules/'.$schedule->public_id;
+    }
+
+    public function test_manager_can_set_each_schedule_amount_and_update_reflects_existing_payments(): void
+    {
+        ['tontine' => $tontine, 'schedule' => $schedule] = $this->createSchedule([
+            'amount_paid' => 4000,
+            'status' => ScheduleStatus::Partial,
+        ]);
+        $manager = $this->managerFor($tontine);
+        Payment::factory()->create([
+            'schedule_id' => $schedule->id,
+            'recorded_by' => $manager->id,
+            'amount' => 4000,
+        ]);
+
+        $this->withToken($this->tokenFor($manager))
+            ->patchJson($this->scheduleUrl($tontine, $schedule), ['amount_expected' => 12000])
+            ->assertOk()
+            ->assertJsonPath('data.amount_expected', 12000)
+            ->assertJsonPath('data.amount_paid', 4000)
+            ->assertJsonPath('data.remaining_amount', 8000)
+            ->assertJsonPath('data.status', 'partial');
+
+        $this->assertSame(12000, $schedule->fresh()->amount_expected);
+        $this->assertDatabaseHas('activity_logs', [
+            'tontine_id' => $tontine->id,
+            'user_id' => $manager->id,
+            'action' => 'schedule.amount_updated',
+            'subject_type' => 'contribution_schedule',
+            'subject_id' => $schedule->id,
+        ]);
+
+        $this->withToken($this->tokenFor($manager))
+            ->patchJson($this->scheduleUrl($tontine, $schedule), ['amount_expected' => 4000])
+            ->assertOk()
+            ->assertJsonPath('data.remaining_amount', 0)
+            ->assertJsonPath('data.status', 'paid');
+
+        $this->withToken($this->tokenFor($manager))
+            ->patchJson($this->scheduleUrl($tontine, $schedule), ['amount_expected' => 8000])
+            ->assertOk()
+            ->assertJsonPath('data.remaining_amount', 4000)
+            ->assertJsonPath('data.status', 'partial');
+
+        $this->assertSame(8000, $schedule->fresh()->amount_expected);
+    }
+
+    public function test_schedule_amount_cannot_be_set_below_amount_already_paid(): void
+    {
+        ['tontine' => $tontine, 'schedule' => $schedule] = $this->createSchedule([
+            'amount_paid' => 4000,
+            'status' => ScheduleStatus::Partial,
+        ]);
+        Payment::factory()->create([
+            'schedule_id' => $schedule->id,
+            'recorded_by' => $this->managerFor($tontine)->id,
+            'amount' => 4000,
+        ]);
+
+        $this->withToken($this->tokenFor($this->managerFor($tontine)))
+            ->patchJson($this->scheduleUrl($tontine, $schedule), ['amount_expected' => 3999])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['amount_expected']);
+
+        $this->assertSame(10000, $schedule->fresh()->amount_expected);
+    }
+
+    public function test_only_the_manager_can_change_a_schedule_amount_and_schedule_is_scoped(): void
+    {
+        ['tontine' => $tontine, 'member' => $member, 'schedule' => $schedule] = $this->createSchedule();
+
+        $this->withToken($this->tokenFor($member))
+            ->patchJson($this->scheduleUrl($tontine, $schedule), ['amount_expected' => 12000])
+            ->assertForbidden();
+
+        $otherTontine = Tontine::factory()->create();
+        $this->withToken($this->tokenFor($this->managerFor($tontine)))
+            ->patchJson($this->scheduleUrl($otherTontine, $schedule), ['amount_expected' => 12000])
+            ->assertNotFound();
+
+        $this->assertSame(10000, $schedule->fresh()->amount_expected);
+    }
+
     public function test_manager_can_record_partial_and_full_payments_transactionally(): void
     {
         ['tontine' => $tontine, 'schedule' => $schedule] = $this->createSchedule();

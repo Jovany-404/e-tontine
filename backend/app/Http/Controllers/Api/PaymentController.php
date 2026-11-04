@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Payment\StorePaymentRequest;
+use App\Http\Requests\Payment\UpdateContributionScheduleRequest;
 use App\Http\Resources\ContributionScheduleResource;
 use App\Http\Resources\PaymentResource;
 use App\Models\ContributionSchedule;
@@ -92,5 +93,20 @@ class PaymentController extends Controller
                 'schedule' => ContributionScheduleResource::make($payment->schedule)->resolve(),
             ],
         ], 201);
+    }
+
+    public function updateSchedule(
+        UpdateContributionScheduleRequest $request,
+        Tontine $tontine,
+        ContributionSchedule $schedule,
+    ): JsonResponse {
+        $updatedSchedule = $this->payments->updateExpectedAmount(
+            $tontine,
+            $schedule,
+            $request->user(),
+            $request->integer('amount_expected'),
+        );
+
+        return ContributionScheduleResource::make($updatedSchedule)->response();
     }
 }

@@ -1,6 +1,6 @@
 // Barre de navigation supérieure
 
-import { Bell, ShieldCheck } from 'lucide-react'
+import { ShieldCheck } from 'lucide-react'
 import type { User } from '../../types'
 
 export default function Navbar({
@@ -20,10 +20,6 @@ export default function Navbar({
 
         <div className="flex items-center gap-4">
           <span className="hidden items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-900 sm:inline-flex"><ShieldCheck size={15} /> Espace sécurisé</span>
-          <button type="button" aria-label="Notifications" className="rounded-full p-2 text-slate-500 transition hover:bg-amber-50 hover:text-emerald-900">
-            <Bell size={18} className="text-slate-600" />
-          </button>
-
           <div className="text-right">
             <p className="max-w-40 truncate text-sm font-semibold text-slate-900">{user?.name || user?.nom || user?.email}</p>
             <p className="text-xs text-slate-500">{user?.email_verified ? 'Compte vérifié' : 'Espace personnel'}</p>

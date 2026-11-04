@@ -7,6 +7,7 @@ import {
   CircleDollarSign,
   Clock3,
   Loader2,
+  Pencil,
   RefreshCw,
   Wallet,
 } from 'lucide-react'
@@ -65,7 +66,9 @@ export default function Contributions() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(null)
+  const [editingScheduleId, setEditingScheduleId] = useState<string | null>(null)
   const [amount, setAmount] = useState('')
+  const [expectedAmount, setExpectedAmount] = useState('')
   const [method, setMethod] = useState<PaymentMethod>('cash')
   const [saving, setSaving] = useState(false)
 
@@ -114,6 +117,7 @@ export default function Contributions() {
   const openPaymentForm = (schedule: ContributionSchedule) => {
     setError('')
     setSuccess('')
+    setEditingScheduleId(null)
     setSelectedScheduleId(schedule.id)
     setAmount(String(schedule.remaining_amount))
     setMethod('cash')
@@ -122,6 +126,19 @@ export default function Contributions() {
   const closePaymentForm = () => {
     setSelectedScheduleId(null)
     setAmount('')
+  }
+
+  const openExpectedAmountForm = (schedule: ContributionSchedule) => {
+    setError('')
+    setSuccess('')
+    setSelectedScheduleId(null)
+    setEditingScheduleId(schedule.id)
+    setExpectedAmount(String(schedule.amount_expected))
+  }
+
+  const closeExpectedAmountForm = () => {
+    setEditingScheduleId(null)
+    setExpectedAmount('')
   }
 
   const handleRecordPayment = async (event: FormEvent<HTMLFormElement>) => {
@@ -149,6 +166,43 @@ export default function Contributions() {
       await load()
     } catch (recordError) {
       setError(getErrorMessage(recordError))
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleUpdateExpectedAmount = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    if (!tontine) return
+
+    const schedule = schedules.find((item) => item.id === editingScheduleId)
+    if (!schedule) return
+
+    const parsedAmount = Number(expectedAmount)
+    if (
+      !Number.isSafeInteger(parsedAmount)
+      || parsedAmount < schedule.amount_paid
+      || parsedAmount < 1
+      || parsedAmount > 10000000
+    ) {
+      setError(`Saisis un montant entier entre ${Math.max(1, schedule.amount_paid)} et 10 000 000 FCFA.`)
+      return
+    }
+
+    setSaving(true)
+    setError('')
+    setSuccess('')
+
+    try {
+      await paymentService.updateExpectedAmount(tontine.id, schedule.id, {
+        amount_expected: parsedAmount,
+      })
+      closeExpectedAmountForm()
+      setSuccess(`Le montant à verser pour ${schedule.member.name} a été mis à jour.`)
+      await load()
+    } catch (updateError) {
+      setError(getErrorMessage(updateError))
     } finally {
       setSaving(false)
     }
@@ -288,17 +342,74 @@ export default function Contributions() {
                     )}
                   </div>
 
-                  {canRecordPayment && schedule.remaining_amount > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => openPaymentForm(schedule)}
-                      className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-sky-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-sky-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
-                    >
-                      <CircleDollarSign size={17} aria-hidden="true" />
-                      Enregistrer un paiement
-                    </button>
+                  {canRecordPayment && (
+                    <div className="flex shrink-0 flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => openExpectedAmountForm(schedule)}
+                        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
+                      >
+                        <Pencil size={16} aria-hidden="true" />
+                        Modifier le montant
+                      </button>
+                      {schedule.remaining_amount > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => openPaymentForm(schedule)}
+                          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-sky-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-sky-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700"
+                        >
+                          <CircleDollarSign size={17} aria-hidden="true" />
+                          Enregistrer un paiement
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
+
+                {editingScheduleId === schedule.id && (
+                  <form
+                    onSubmit={(event) => void handleUpdateExpectedAmount(event)}
+                    className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-4 sm:p-5"
+                  >
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+                      <label className="flex-1 text-sm font-medium text-slate-700">
+                        Montant total à verser (FCFA)
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          min={Math.max(1, schedule.amount_paid)}
+                          max={10000000}
+                          step={1}
+                          required
+                          value={expectedAmount}
+                          onChange={(event) => setExpectedAmount(event.target.value)}
+                          className="mt-1.5 block min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                        />
+                      </label>
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={closeExpectedAmountForm}
+                          disabled={saving}
+                          className="min-h-11 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                        >
+                          Annuler
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={saving}
+                          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-emerald-800 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-900 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {saving && <Loader2 className="animate-spin" size={16} aria-hidden="true" />}
+                          {saving ? 'Enregistrement…' : 'Enregistrer le montant'}
+                        </button>
+                      </div>
+                    </div>
+                    <p className="mt-2 text-xs text-slate-600">
+                      Le montant ne peut pas être inférieur aux {formatAmount(schedule.amount_paid)} déjà encaissés.
+                    </p>
+                  </form>
+                )}
 
                 {selectedScheduleId === schedule.id && (
                   <form

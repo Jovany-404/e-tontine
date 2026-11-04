@@ -36,6 +36,10 @@ export interface RecordPaymentData {
   method: PaymentMethod
 }
 
+export interface UpdateScheduleAmountData {
+  amount_expected: number
+}
+
 export const paymentService = {
   async getSchedules(tontinePublicId: string): Promise<ContributionSchedule[]> {
     const response = await api.get<{ data: ContributionSchedule[] }>(
@@ -52,6 +56,17 @@ export const paymentService = {
   ): Promise<void> {
     await api.post(
       `/tontines/${tontinePublicId}/schedules/${schedulePublicId}/payments`,
+      payload,
+    )
+  },
+
+  async updateExpectedAmount(
+    tontinePublicId: string,
+    schedulePublicId: string,
+    payload: UpdateScheduleAmountData,
+  ): Promise<void> {
+    await api.patch(
+      `/tontines/${tontinePublicId}/schedules/${schedulePublicId}`,
       payload,
     )
   },
